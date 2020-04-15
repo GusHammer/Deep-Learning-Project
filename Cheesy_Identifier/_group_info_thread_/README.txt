@@ -1,0 +1,1 @@
+Place to add .txt files about what you have done on the project if you feel the need for doing it.

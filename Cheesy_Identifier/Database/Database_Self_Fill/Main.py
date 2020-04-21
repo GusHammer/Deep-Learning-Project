@@ -43,9 +43,19 @@ from GetImages import extractor as Extractor
 from push_extractor_to_xampp import preparator as Preparator
 import time
 
-cheese_types = ["mozzarella", "parmesan", "cheddar", "gouda",
-                "swiss", "camembert", "feta", "provolone", "edam",
-                "gorgonzola", "ricotta", "cottage"]
+cheese_types = ["mozzarella cheese -pearson -burguer",
+                "parmesan cheese -pearson -burguer",
+                "cheddar cheese -burguer -meat -potato",
+                "gouda cheese -city -church -house -pearson -burguer",
+                "swiss cheese -house -airplane -switzerland",
+                "camembert cheese",
+                "feta cheese",
+                "provolone cheese -sausage",
+                "edam cheese -house -city -pearson -ball -car",
+                "emmental cheese",
+                "gorgonzola cheese",
+                "ricotta cheese -pearson",
+                "cottage cheese -pearson -house -tree"]
 
 additional_features = []  # ["italian", "french", "white background"]
 # No additional features were used in the extraction

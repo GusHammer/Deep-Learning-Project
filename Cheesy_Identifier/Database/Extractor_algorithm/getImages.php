@@ -31,9 +31,15 @@
 
     for($i = 0; $i < sizeof($cheese_names); $i++){
         if(sizeof($feature_names) > 0){
-            for($j = 0; $j < sizeof($feature_names); $j++){  array_push($permuted, [$cheese_names[$i], $cheese_names[$i]." ".$feature_names[$j]]);  }
+            for($j = 0; $j < sizeof($feature_names); $j++){  array_push($permuted, [explode(" ", $cheese_names[$i])[0], $cheese_names[$i]." ".$feature_names[$j]]);  }
         }
-        else{ array_push($permuted, [$cheese_names[$i], $cheese_names[$i]]); }
+        else{ array_push($permuted, [explode(" ", $cheese_names[$i])[0], $cheese_names[$i]]); }
+    }
+
+    foreach ($permuted as $key) {
+        foreach ($key as $k => $value) {
+           //echo $k." ".$value."<br>";
+        }
     }
 
     start_html();
@@ -56,8 +62,10 @@
             
             $steps = $steps + 20;
 
-            $html = file_get_html("https://www.google.com/search?q=$search_query&tbm=isch&start=$steps");    
-            
+            $html = file_get_html("https://www.google.com/search?q=$search_query&atb=v193-1&ia=web&tbm=isch&start=$steps");    
+                
+            //echo "https://www.google.com/search?q=$search_query&tbm=isch&start=$steps<br>";
+
             $images = $html->find('img');
 
             $root = str_replace(" ","_",$permuted[$i][0]);

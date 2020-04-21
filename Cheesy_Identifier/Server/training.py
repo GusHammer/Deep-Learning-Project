@@ -6,6 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as img
+from PIL import Image
 
 batch_size = 128
 epochs = 20
@@ -51,8 +52,11 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 model.fit(train_images, train_labels, epochs=epochs)
 
 os.chdir("..")
-test = img.imread("cam.png")
-
+test = Image.open("cam.png")
+test = test.resize((128,128))
+test = np.array(test)
+if test.shape[2] == 4:
+	test = test[:, :, :3]
 predictions = model.predict([[test]])
 highest = 0
 value = 0

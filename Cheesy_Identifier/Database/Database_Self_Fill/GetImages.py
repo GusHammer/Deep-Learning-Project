@@ -1,65 +1,73 @@
 
-"""
+import os, time, math
 
-Array of queries shall be like:  ["provolone", "cheddar"]
-For more than one element in query: "provolone cheddar" for example.
-So it should be like:  ["provolone", "cheddar", "provolone cheddar"].
 
-"""
-import os
-import time
+# query = [ ["name", "no pakage ...."], ...]
 
 class extractor():
-    def __init__(self, _path_, _queries_, n_images, _additional_features_, _clean_="no"):
-        self.xampp_path = _path_
-        self.query = _queries_
-        self.number = n_images
-        self.add_fts = _additional_features_
-        self.clean = _clean_
+    def __init__(self, _path_, _queries_, _n_images_, wait_time=125, for_loop_step=4, _max_extracted_=200, _clean_="yes"):
+        self.xampp_path, self.query, self.number, self.clean = _path_, _queries_, _n_images_, _clean_
+        self.wait_time, self.number_of_simultaneous_processes = wait_time, for_loop_step
+        self.max = _max_extracted_ if _max_extracted_ < 200 else 200
 
-    def array_implode(self, array):
-        if len(array) == 0:
-            return ""
-        return "_DL_".join(["_".join(x.split()) for x in array])
+    def to_queries(self):
+        ret = []
+        for x in self.query:
+            if x[1] == "":
+                ret.append(["_".join(x[0].split()), "_".join(x[0].split())])
+                continue
+            ret.append(["_".join(x[0].split()), "_".join(x[0].split())+"_"+"_".join(x[1].split())])
+        return ret
+
+    def fragment_query(self, query):
+        i, steps, ret = 0, (self.number / self.max), []
+
+        exceed = math.ceil(steps)
+        while i <= steps:
+            start_at, until = i*self.max, (i+1)*self.max if (i+1) < exceed else self.number
+            ret.append(
+                (
+                 "?link="+query[0]+"_BR_"+query[1]+"_BR_"+str(start_at)+"_BR_"+str(until)+"_BR_"+
+                 self.clean+"_BR_"+"\\".join(os.path.abspath(os.getcwd()).split("\\")[:-1])
+                )
+            )
+            if self.clean == "yes":
+                self.clean = "no"
+            i += 1
+        return ret
 
     def fragment_array(self):
-        return [("?link="+self.array_implode([self.query[x]])
-                +"_QF_"
-                +"_QF_"+self.clean
-                +"_QF_"+str(self.number)
-                +"_QF_"+"\\".join(os.path.abspath(os.getcwd()).split("\\")[:-1])) for x in range(0, len(self.query))]
+        return [ self.fragment_query(query) for query in self.to_queries() ]
 
-    def implode_arrays(self):
-        return ("?link="+self.array_implode(self.query)
-                +"_QF_"
-                +"_QF_"+self.clean
-                +"_QF_"+str(self.number)
-                +"_QF_"+"\\".join(os.path.abspath(os.getcwd()).split("\\")[:-1]))
+    def cmd_command(self, link):
+        return "start /max http://localhost/Extractor_algorithm_Cheesy_Identifier/getImages.php"+link
 
-    def permutation(self):
-        if self.add_fts != []:
-            self.query = [ x+" "+y for x in self.query for y in self.add_fts]
-
-    def cmd_command(self, optional=""):
-        cmd = "start /max http://localhost/Extractor_algorithm_Cheesy_Identifier/getImages.php"
-        return cmd+self.implode_arrays() if optional=="" else cmd+optional
-
-    def start_apache(self):
+    def start_apache(self, sleep_time=5):
         os.system("START \"\" "+self.xampp_path+"/apache_start")
-        time.sleep(4)
+        time.sleep(sleep_time)
 
-    def stop_apache(self, timer=2):
-        time.sleep(timer)
+    def stop_apache(self, sleep_time=4):
+        time.sleep(sleep_time)
         os.system("START \"\" "+self.xampp_path+"/apache_stop")
 
     def thread_start(self):
-        self.permutation()
-        for x in self.fragment_array():
-            os.system(self.cmd_command(x))
-            self.clean = "no"
+        self.query = self.fragment_array()
+        for x in range(0, len(self.query), self.number_of_simultaneous_processes):
+            i = 0
+            while i < len(self.query[x]):
+
+                if x+self.number_of_simultaneous_processes < len(self.query):
+                    for j in range(x, x+self.number_of_simultaneous_processes):
+                        os.system(self.cmd_command(self.query[j][i]))
+                else:
+                    for j in range(x, len(self.query)):
+                        os.system(self.cmd_command(self.query[j][i]))
+
+                time.sleep(self.wait_time)
+                i += 1
 
     def start(self):
-        self.permutation()
-        os.system(self.cmd_command())
-
+        self.start_apache()
+        self.thread_start()
+        self.stop_apache()
 

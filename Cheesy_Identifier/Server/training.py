@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as img
 from PIL import Image
+import pickle
 
 batch_size = 128
 epochs = 20
@@ -44,25 +45,11 @@ model = keras.models.Sequential([
     Conv2D(64, 3, padding='same', activation='relu'),
     MaxPooling2D(),
     Flatten(),
-    Dense(256, activation='relu'),
+    Dense(512, activation='relu'),
     Dense(len(train_classes_dirs), 'softmax')
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 model.fit(train_images, train_labels, epochs=epochs)
 
-os.chdir("..")
-test = Image.open("cam.png")
-test = test.resize((128,128))
-test = np.array(test)
-if test.shape[2] == 4:
-	test = test[:, :, :3]
-predictions = model.predict([[test]])
-highest = 0
-value = 0
-for item in range(len(predictions[0])):
-	if predictions[0][item] > value:
-		highest = item
-		value = predictions[0][item]
-		
-print(classes[int(value)])
+model.save("model")

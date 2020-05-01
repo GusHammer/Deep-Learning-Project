@@ -10,7 +10,7 @@ function submit(){
 		processData: false,
 		data: data,
 		success: function (data) {
-			console.log(data)
+			window.location.href = "answer.html?answer=" + data;
 		}
 	});
 }

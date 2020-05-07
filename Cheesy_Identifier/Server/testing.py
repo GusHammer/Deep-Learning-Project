@@ -46,7 +46,7 @@ def predict():
 		if predictions[0][item] > value:
 			highest = item
 			value = predictions[0][item]
-	
+	print(predictions)
 	return classes[int(highest)]
 
 

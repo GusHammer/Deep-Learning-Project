@@ -19,14 +19,13 @@ os.chdir("../Database/cheese_photos")
 train_dir = os.getcwd()
 train_classes_dirs = []
 classes = []
+smooth_responses = ["Camembert", "Cheddar", "Cottage", "Edam", "Gorgonzola", "Parmesan", "Swiss"]
 
 for directory in os.listdir():
 	train_classes_dirs.append(os.path.join(train_dir, directory))
 	classes.append(directory)
 
 os.chdir(path)
-
-test = Image.open("cam.png")
 
 @app.route('/api/v1/predict/sample', methods=['POST'])
 def predict():
@@ -47,7 +46,7 @@ def predict():
 			highest = item
 			value = predictions[0][item]
 	print(predictions)
-	return classes[int(highest)]
+	return smooth_responses[int(highest)]
 
 
 if __name__ == '__main__':

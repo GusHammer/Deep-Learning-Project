@@ -71,7 +71,7 @@ model = keras.models.Sequential([
 ])
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 print(model.summary())
-plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+#plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 history = model.fit(train_images, train_labels, batch_size=128, validation_data=(test_images,test_labels), epochs=epochs)
 
 os.chdir(modelPath)
